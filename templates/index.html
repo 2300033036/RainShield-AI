@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RainShield AI</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #0f172a;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            background: #22c55e;
+            color: white;
+            cursor: pointer;
+        }
+        .box {
+            background: #1e293b;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🌧️ RainShield AI</h1>
+
+<div class="box">
+    <h2>Buy Insurance</h2>
+    <button onclick="buy('basic')">Basic Plan ₹20</button>
+    <button onclick="buy('premium')">Premium Plan ₹50</button>
+</div>
+
+<div class="box">
+    <h2>Simulate Rain</h2>
+    <p>AI Risk Prediction: HIGH ⚠️</p>
+    <button onclick="rain()">Trigger Weather</button>
+</div>
+
+<div class="box">
+    <h2>Result</h2>
+    <p id="result">No activity yet</p>
+</div>
+
+<script>
+function buy(plan){
+    fetch('/buy_policy',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({plan:plan})
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        document.getElementById("result").innerText =
+        data.message + " | Balance: ₹" + data.balance;
+    });
+}
+
+function rain(){
+    fetch('/simulate_rain',{
+        method:'POST'
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.status === "CLAIM TRIGGERED"){
+            document.getElementById("result").innerText =
+            "🔥 CLAIM! ₹" + data.payout + " credited | Balance: ₹" + data.balance;
+        } else {
+            document.getElementById("result").innerText =
+            "No disruption (Rain: " + data.rain + ")";
+        }
+    });
+}
+</script>
+
+</body>
+</html>
